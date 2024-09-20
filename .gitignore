@@ -10,6 +10,7 @@ node_modules/
 target/
 **/.env
 **/dist/
+.vscode/
 
 # Web IDE, App Studio
 .che/
