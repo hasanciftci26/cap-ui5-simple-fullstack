@@ -63,7 +63,7 @@
                                                 }
                                             ]
                                         }
-                                    }"                                    
+                                    }"
                                 />
                             </smartFilterBar:controlConfiguration>
                         </smartFilterBar:SmartFilterBar>
@@ -470,5 +470,16 @@
                 </items>
             </IconTabBar>
         </content>
+        <footer>
+            <OverflowToolbar id="otbFooter">
+                <Button
+                    id="btnMessages"
+                    icon="sap-icon://alert"
+                    text="{=${message>/}.length}"
+                    type="Emphasized"
+                    press="onMessagePopoverPress"
+                />
+            </OverflowToolbar>
+        </footer>
     </Page>
 </mvc:View>

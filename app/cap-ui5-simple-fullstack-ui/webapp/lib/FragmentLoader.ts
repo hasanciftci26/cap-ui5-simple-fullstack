@@ -49,7 +49,7 @@ export default abstract class FragmentLoader extends BaseObject {
             throw new Error("The loaded fragment does not contain a sap.m.Dialog.");
         }
 
-        if (!this.dialog.getContent().length) {
+        if (!content.getContent().length) {
             throw new Error("The loaded sap.m.Dialog does not contain any content.");
         }
 
