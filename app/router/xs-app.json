@@ -1,0 +1,11 @@
+{
+  "authenticationMethod": "route",
+  "routes": [
+    {
+      "source": "^/odata/v2/online-shopping/(.*)$",
+      "destination": "backend-api",
+      "authenticationType": "xsuaa"
+    }
+  ],
+  "welcomeFile": "/cftctrainingcapui5simplefullstackui"
+}

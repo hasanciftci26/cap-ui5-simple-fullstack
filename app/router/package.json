@@ -1,0 +1,19 @@
+{
+  "name": "approuter",
+  "description": "Node.js based application router service for html5-apps",
+  "engines": {
+    "node": "^20"
+  },
+  "dependencies": {
+    "@sap/approuter": "16.0.0"
+  },
+  "devDependencies": {
+    "@sap/html5-repo-mock": "^2.1.9",
+    "dotenv": "^16.4.4"
+  },
+  "scripts": {
+    "start": "node node_modules/@sap/approuter/approuter.js",
+    "build-ui": "npm --prefix ../cap-ui5-simple-fullstack-ui run build:cf",
+    "start-local": "npm run build-ui && node -r dotenv/config node_modules/@sap/html5-repo-mock/index.js"
+  }
+}

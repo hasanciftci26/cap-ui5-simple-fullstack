@@ -1,0 +1,8 @@
+{
+  "xsappname": "cap-ui5-simple-fullstack",
+  "tenant-mode": "dedicated",
+  "scopes": [],
+  "attributes": [],
+  "role-templates": [],
+  "authorities-inheritance": false
+}

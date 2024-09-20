@@ -1,0 +1,80 @@
+{
+  "name": "cap-ui5-simple-fullstack",
+  "version": "1.0.0",
+  "description": "A simple fullstack CAP-UI5 application.",
+  "repository": "https://github.com/hasanciftci26/cap-ui5-simple-fullstack",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^7",
+    "express": "^4",
+    "@sap/xssec": "^3",
+    "@sap/cds-hana": "^2",
+    "@cap-js-community/odata-v2-adapter": "^1.12.2",
+    "@sap-cloud-sdk/mail-client": "^3.20.0",
+    "passport": "^0"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^7",
+    "@sap/ux-specification": "^1.124.1",
+    "@types/chai": "^4.3.14",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.4",
+    "rimraf": "^5.0.5"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "undeploy": "cf undeploy cap-ui5-simple-fullstack --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "build-ts": "tsc"
+  },
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "admin": {
+              "password": "admin",
+              "roles": []
+            },
+            "manager": {
+              "password": "manager",
+              "roles": []
+            },
+            "user": {
+              "password": "user",
+              "roles": []
+            }
+          }
+        },
+        "[hybrid]": {
+          "kind": "xsuaa"
+        },
+        "[production]": {
+          "kind": "xsuaa"
+        }
+      },
+      "db": {
+        "kind": "hana",
+        "pool": {
+          "acquireTimeoutMillis": 20000
+        }
+      }
+    },
+    "query": {
+      "limit": {
+        "default": 10000,
+        "max": 99999
+      }
+    },
+    "cov2ap": {
+      "plugin": true
+    }
+  },
+  "sapux": [
+    "app/cap-ui5-simple-fullstack-ui"
+  ]
+}

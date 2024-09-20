@@ -1,0 +1,162 @@
+_schema-version: "3.1"
+ID: cap-ui5-simple-fullstack
+description: A simple fullstack CAP-UI5 application.
+version: 1.0.0
+
+modules:
+
+# ------------------------- Backend Nodejs Module -----------------------------
+- name: cap-ui5-simple-fullstack-srv
+# -----------------------------------------------------------------------------
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: cap-ui5-simple-fullstack-auth
+  - name: cap-ui5-simple-fullstack-db
+  - name: cap-ui5-simple-fullstack-dest
+  provides:
+  - name: backend-api
+    properties:
+      backend-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    readiness-health-check-http-endpoint: /health
+    readiness-health-check-type: http
+  build-parameters:
+    ignore: ["default-env.json", ".env", "**/*.ts", "srv/**/*.ts", "srv/lib/**/*.ts"]
+    builder: npm-ci    
+
+# --------------------------- DB Deployer Module ------------------------------
+- name: cap-ui5-simple-fullstack-db-deployer
+# -----------------------------------------------------------------------------
+  type: hdb
+  path: gen/db
+  requires:
+  - name: cap-ui5-simple-fullstack-db
+  parameters:
+    buildpack: nodejs_buildpack
+
+# ---------------------------- Approuter Module -------------------------------
+- name: cap-ui5-simple-fullstack
+# -----------------------------------------------------------------------------
+  type: approuter.nodejs
+  path: app\router
+  requires:
+  - name: backend-api
+    group: destinations
+    properties:
+      forwardAuthToken: true
+      name: backend-api
+      url: ~{backend-url}
+  - name: cap-ui5-simple-fullstack-auth
+  - name: cap-ui5-simple-fullstack-dest
+  parameters:
+    disk-quota: 256M
+    keep-existing-routes: true
+    memory: 256M
+  properties:
+    SESSION_TIMEOUT: 30
+    INCOMING_CONNECTION_TIMEOUT: 0
+    npm_config_cache: .npmcache
+    npm_config_prefer_offline: true
+
+# ---------------------------- UI Deployer Module -----------------------------    
+- name: cap-ui5-simple-fullstack-ui-deployer
+# -----------------------------------------------------------------------------
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: cap-ui5-simple-fullstack-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - cftctrainingcapui5simplefullstackui.zip
+      name: cftctrainingcapui5simplefullstackui
+      target-path: resources/
+
+# ------------------------------- HTML5 Module --------------------------------      
+- name: cftctrainingcapui5simplefullstackui
+# -----------------------------------------------------------------------------
+  type: html5
+  path: app/cap-ui5-simple-fullstack-ui
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+
+resources:
+
+# -------------------------- Authentication Service ---------------------------
+- name: cap-ui5-simple-fullstack-auth
+# -----------------------------------------------------------------------------
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+
+# ------------------------- HDI Container Service -----------------------------  
+- name: cap-ui5-simple-fullstack-db
+# -----------------------------------------------------------------------------
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+
+# --------------------------- Destination Service ----------------------------- 
+- name: cap-ui5-simple-fullstack-dest
+# -----------------------------------------------------------------------------
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Description: CAP Backend OData Service Destination
+            HTML5.DynamicDestination: true
+            Name: backend-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{backend-api/backend-url}
+            HTML5.Timeout: 300000            
+          - Authentication: NoAuthentication
+            Name: ui5
+            Description: UI5 Library Destination
+            ProxyType: Internet
+            Type: HTTP
+            URL: 'https://ui5.sap.com'            
+          existing_destinations_policy: update
+      version: 1.0.0          
+    service: destination
+    service-plan: lite
+  requires:
+  - name: backend-api    
+
+# ------------------------- HTML5 Repo Host Service --------------------------- 
+- name: cap-ui5-simple-fullstack-repo-host
+# -----------------------------------------------------------------------------
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: cap-ui5-simple-fullstack-html5-srv
+    service-plan: app-host
+
+# ------------------------- Build-Deploy Parameters --------------------------- 
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production
+    - npm run build-ts    
