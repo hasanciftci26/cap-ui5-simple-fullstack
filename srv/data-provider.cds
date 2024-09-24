@@ -16,7 +16,27 @@ service OnlineShopping {
     entity Categories     as select from DBCategories;
     entity Countries      as select from DBCountries;
     entity Currencies     as select from DBCurrencies;
-    entity Customers      as select from DBCustomers;
+
+    entity Customers @(restrict: [
+        {
+            grant: 'READ',
+            to   : 'Manager',
+            where: 'country = $user.country'
+        },
+        {
+            grant: [
+                'CREATE',
+                'UPDATE',
+                'DELETE'
+            ],
+            to   : 'Manager'
+        },
+        {
+            grant: '*',
+            to   : 'Administrator'
+        }
+    ])                    as select from DBCustomers;
+
     entity OrderHeaders   as select from DBOrderHeaders;
     entity OrderItems     as select from DBOrderItems;
     entity PaymentMethods as select from DBPaymentMethods;

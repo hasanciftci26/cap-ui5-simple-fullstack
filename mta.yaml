@@ -50,6 +50,7 @@ modules:
       url: ~{backend-url}
   - name: cap-ui5-simple-fullstack-auth
   - name: cap-ui5-simple-fullstack-dest
+  - name: cap-ui5-simple-fullstack-repo-runtime
   parameters:
     disk-quota: 256M
     keep-existing-routes: true
@@ -148,6 +149,14 @@ resources:
     service: html5-apps-repo
     service-name: cap-ui5-simple-fullstack-html5-srv
     service-plan: app-host
+
+# --------------------- HTML5 Repo Runtime Service ----------------------------          
+- name: cap-ui5-simple-fullstack-repo-runtime
+# -----------------------------------------------------------------------------  
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-runtime    
 
 # ------------------------- Build-Deploy Parameters --------------------------- 
 parameters:

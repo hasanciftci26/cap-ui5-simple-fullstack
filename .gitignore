@@ -11,6 +11,7 @@ target/
 **/.env
 **/dist/
 .vscode/
+resources/
 
 # Web IDE, App Studio
 .che/

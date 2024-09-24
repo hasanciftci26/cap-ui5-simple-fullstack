@@ -1,8 +1,69 @@
 {
   "xsappname": "cap-ui5-simple-fullstack",
   "tenant-mode": "dedicated",
-  "scopes": [],
-  "attributes": [],
-  "role-templates": [],
-  "authorities-inheritance": false
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.User",
+      "description": "User"
+    },
+    {
+      "name": "$XSAPPNAME.Manager",
+      "description": "Manager"
+    },
+    {
+      "name": "$XSAPPNAME.Administrator",
+      "description": "Administrator"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "height",
+      "description": "height",
+      "valueType": "s",
+      "valueRequired": true
+    },
+    {
+      "name": "country",
+      "description": "country",
+      "valueType": "s",
+      "valueRequired": false
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "User",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.User"
+      ],
+      "attribute-references": [
+        "height"
+      ]
+    },
+    {
+      "name": "Manager",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.Manager"
+      ],
+      "attribute-references": [
+        "country"
+      ]
+    },
+    {
+      "name": "Administrator",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.Administrator"
+      ],
+      "attribute-references": []
+    }
+  ],
+  "authorities-inheritance": false,
+  "oauth2-configuration": {
+    "redirect-uris": [
+      "https://*.us10-001.hana.ondemand.com/**",
+      "http://localhost:1299/login/callback"
+    ]
+  }
 }
